@@ -1,17 +1,45 @@
 //for components
 import { GrFormNext, GrFormPrevious } from "react-icons/gr";
+import { FiSend } from "react-icons/fi";
 import UserForm from "./components/UserForm";
 import ReviewForm from "./components/ReviewForm";
 import Thanks from "./components/Thanks";
 import Steps from "./components/Steps";
 //for hooks
+import { useState } from "react";
 import { useForm } from "./hooks/useForm";
 //for css
 import "./styles/App.css";
 
+type formFields = {
+  name: string;
+  email: string;
+  review: string;
+  comment: string;
+};
+
+const formTemplate: formFields = {
+  name: "",
+  email: "",
+  review: "",
+  comment: "",
+};
+
 function App() {
-  const formComponents = [<UserForm />, <ReviewForm />, <Thanks />];
-  const { currentStep, currenteComponent, changeStep } =
+  const [data, setData] = useState(formTemplate);
+
+  const updateFieldHandler = (key: string, value: string) => {
+    setData((prev) => {
+      return { ...prev, [key]: value };
+    });
+  };
+
+  const formComponents = [
+    <UserForm data={data} updateFieldHandler={updateFieldHandler} />,
+    <ReviewForm data={data} updateFieldHandler={updateFieldHandler} />,
+    <Thanks data={data} />,
+  ];
+  const { currentStep, currenteComponent, changeStep, isLastStep } =
     useForm(formComponents);
 
   return (
@@ -32,10 +60,17 @@ function App() {
               <GrFormPrevious />
               <span>Previous</span>
             </button>
-            <button type="submit">
-              <GrFormNext />
-              <span>Next</span>
-            </button>
+            {!isLastStep ? (
+              <button type="submit">
+                <GrFormNext />
+                <span>Next</span>
+              </button>
+            ) : (
+              <button type="button">
+                <FiSend />
+                <span>submit</span>
+              </button>
+            )}
           </div>
         </form>
       </div>
